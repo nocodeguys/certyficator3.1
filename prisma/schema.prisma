@@ -16,5 +16,5 @@ model Certificate {
   completionDate    DateTime
   companyLogo       String?
   createdAt         DateTime @default(now())
-  notionPageId      String @unique
+  notionPageId      String? @unique
 }
