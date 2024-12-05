@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "sync-notion": "ts-node -r tsconfig-paths/register scripts/sync-notion.ts"
+    "sync-notion": "ts-node -r tsconfig-paths/register scripts/sync-notion.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
