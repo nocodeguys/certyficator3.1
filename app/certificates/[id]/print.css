@@ -1,0 +1,27 @@
+@media print {
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  
+    .min-h-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    .bg-gray-100 {
+      background-color: white;
+    }
+  
+    .shadow-lg {
+      box-shadow: none;
+    }
+  
+    .download-button {
+      display: none;
+    }
+  }
+  
+  

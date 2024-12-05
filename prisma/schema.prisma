@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Certificate {
+  id                String   @id @default(cuid())
+  participantName   String
+  courseName        String
+  courseDescription String?
+  authorName        String?
+  completionDate    DateTime
+  companyLogo       String?
+  createdAt         DateTime @default(now())
+  notionPageId      String @unique
+}
