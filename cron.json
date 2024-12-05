@@ -1,0 +1,11 @@
+{
+    "version": 1,
+    "jobs": [
+      {
+        "path": "/api/sync-notion",
+        "schedule": "0 * * * *"
+      }
+    ]
+  }
+  
+  
