@@ -7,6 +7,12 @@ export function CertificateTemplate(certificate: Certificate) {
 
   useEffect(() => {
     const loadImages = async () => {
+      // Skip image loading during server-side rendering
+      if (typeof window === 'undefined') {
+        setImagesLoaded(true);
+        return;
+      }
+
       try {
         const images = [
           '/images/ni-award.svg',
@@ -17,7 +23,7 @@ export function CertificateTemplate(certificate: Certificate) {
         await Promise.all(
           images.map(src => {
             return new Promise((resolve, reject) => {
-              const img = new Image();
+              const img = new window.Image();
               img.src = src;
               img.onload = resolve;
               img.onerror = reject;
