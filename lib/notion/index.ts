@@ -1,7 +1,7 @@
 import { Client } from '@notionhq/client';
 import { PrismaClient } from '@prisma/client';
 import type { Certificate } from '@prisma/client';
-import type { DatabaseObjectResponse, PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { NOTION_API_KEY, NOTION_DATABASE_ID, NOTION_INTEGRATION_ENABLED } from './config';
 
 const notion = new Client({ auth: NOTION_API_KEY });
