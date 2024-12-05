@@ -4,30 +4,26 @@ import Image from 'next/image'
 
 export function CertificateTemplate(certificate: Certificate) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [awardIconSrc, setAwardIconSrc] = useState<string>('');
-  const [logoSrc, setLogoSrc] = useState<string>('');
-  const [signatureSrc, setSignatureSrc] = useState<string>('');
 
   useEffect(() => {
     const loadImages = async () => {
       try {
-        const [awardIconData, logoData, signatureData] = await Promise.all([
-          fetch('/images/ni-award.svg').then(res => res.text()),
-          fetch('/images/logo-dobra.png').then(res => res.blob()),
-          fetch('/images/signature.svg').then(res => res.text())
-        ]);
+        const images = [
+          '/images/ni-award.svg',
+          '/images/logo-dobra.png',
+          '/images/signature.svg'
+        ];
 
-        const awardIconBase64 = btoa(awardIconData);
-        setAwardIconSrc(`data:image/svg+xml;base64,${awardIconBase64}`);
-
-        const signatureBase64 = btoa(signatureData);
-        setSignatureSrc(`data:image/svg+xml;base64,${signatureBase64}`);
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setLogoSrc(reader.result as string);
-        };
-        reader.readAsDataURL(logoData);
+        await Promise.all(
+          images.map(src => {
+            return new Promise((resolve, reject) => {
+              const img = new Image();
+              img.src = src;
+              img.onload = resolve;
+              img.onerror = reject;
+            });
+          })
+        );
 
         setImagesLoaded(true);
       } catch (error) {
@@ -76,32 +72,26 @@ export function CertificateTemplate(certificate: Certificate) {
         <div className="flex justify-between items-start mb-32">
           <div className="flex items-center gap-4">
             <div className="w-28 h-28 bg-[#4185F3] rounded-full flex items-center justify-center">
-              {awardIconSrc && (
-                <img 
-                  src={awardIconSrc}
-                  alt="Award Icon"
-                  style={{ 
-                    width: '84px',
-                    height: '84px'
-                  }}
-                  className="text-black"
-                />
-              )}
+              <Image 
+                src="/images/ni-award.svg"
+                alt="Award Icon"
+                width={84}
+                height={84}
+                className="text-black"
+                unoptimized
+              />
             </div>
             <span className="text-4xl text-gray-700">Akademia Dobrej Treści</span>
           </div>
           <div className="absolute top-24 right-24 w-[200px] h-[100px]">
-            {logoSrc && (
-              <img
-                src={logoSrc}
-                alt="Dobra Treść Logo"
-                style={{ 
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain'
-                }}
-              />
-            )}
+            <Image
+              src="/images/logo-dobra.png"
+              alt="Dobra Treść Logo"
+              width={200}
+              height={100}
+              style={{ objectFit: 'contain' }}
+              unoptimized
+            />
           </div>
         </div>
 
@@ -122,18 +112,15 @@ export function CertificateTemplate(certificate: Certificate) {
 
           {/* Signature Area */}
           <div className="mt-40 pt-16">
-            {signatureSrc && (
-              <div className="mb-4">
-                <img
-                  src={signatureSrc}
-                  alt="Signature"
-                  style={{ 
-                    width: '200px',
-                    height: '50px'
-                  }}
-                />
-              </div>
-            )}
+            <div className="mb-4">
+              <Image
+                src="/images/signature.svg"
+                alt="Signature"
+                width={200}
+                height={50}
+                unoptimized
+              />
+            </div>
             <div className="border-b-2 border-gray-400 w-96 mb-4"></div>
             <div className="flex justify-between items-end text-2xl">
               <div className="text-gray-900">
