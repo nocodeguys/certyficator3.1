@@ -15,21 +15,31 @@ interface NotionPageProperties {
   'Completion Date': { date: { start: string } };
 }
 
-export async function syncNotionData(): Promise<void> {
+export async function syncNotionData(): Promise<{ 
+  processedPages: number, 
+  createdCertificates: number, 
+  updatedCertificates: number,
+  errors: number
+}> {
   if (!NOTION_INTEGRATION_ENABLED) {
     console.log('Notion integration is disabled');
-    return;
+    return { processedPages: 0, createdCertificates: 0, updatedCertificates: 0, errors: 0 };
   }
 
+  let processedPages = 0;
+  let createdCertificates = 0;
+  let updatedCertificates = 0;
+  let errors = 0;
+
   try {
-    // Verify database exists but don't store the result since we don't use it
     await notion.databases.retrieve({ database_id: NOTION_DATABASE_ID as string });
     const results = await notion.databases.query({ 
       database_id: NOTION_DATABASE_ID as string 
     });
 
     for (const page of results.results as PageObjectResponse[]) {
-      console.log('Processing page properties:', page.properties);
+      processedPages++;
+      console.log(`Processing page ${processedPages}:`, page.id);
       
       const properties = page.properties as unknown as NotionPageProperties;
       
@@ -42,13 +52,7 @@ export async function syncNotionData(): Promise<void> {
 
       if (!participantName || !courseName || !courseDescription || !authorName || !completionDate) {
         console.error('Missing required fields for page:', page.id);
-        console.error({
-          participantName,
-          courseName,
-          courseDescription,
-          authorName,
-          completionDate
-        });
+        errors++;
         continue;
       }
 
@@ -74,11 +78,15 @@ export async function syncNotionData(): Promise<void> {
             where: { notionPageId: page.id },
             data: certificateData,
           });
+          updatedCertificates++;
+          console.log(`Updated certificate for page ${page.id}`);
         } else {
           // Create new certificate
           certificate = await prisma.certificate.create({
             data: certificateData,
           });
+          createdCertificates++;
+          console.log(`Created new certificate for page ${page.id}`);
         }
 
         // Update Notion with the certificate URL
@@ -92,13 +100,20 @@ export async function syncNotionData(): Promise<void> {
         });
       } catch (error) {
         console.error('Error processing certificate:', error instanceof Error ? error.message : String(error));
-        throw error;
+        errors++;
       }
     }
 
-    console.log('Notion data synced successfully');
+    console.log('Notion data sync summary:', {
+      processedPages,
+      createdCertificates,
+      updatedCertificates,
+      errors
+    });
+    return { processedPages, createdCertificates, updatedCertificates, errors };
   } catch (error) {
     console.error('Error syncing Notion data:', error instanceof Error ? error.message : String(error));
     throw error;
   }
 }
+
